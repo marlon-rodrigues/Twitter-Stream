@@ -1,0 +1,199 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+
+var app = require('../app');
+var debug = require('debug')('atlas:server');
+var http = require('http');
+var twitter = require('twitter');
+
+/**
+ * Get port from environment and store in Express.
+ */
+
+var port = normalizePort(process.env.PORT || '3000'); 
+app.set('port', port);
+
+/**
+ * Create HTTP server.
+ */
+
+var server = http.createServer(app);
+
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);
+
+/**
+ * Setup Twitter Stream API
+ */
+var twit = new twitter({
+  consumer_key: 'Osr8oxWqSKQanA3FsTxwdIb8t',
+  consumer_secret: 'AvSAB6m5zRWD06ujJiZO6iy13FuXTXhAadunUJFUlEQtwymoli',
+  access_token_key: '1419686233-YZtWRo0f5JnXAbLhZ3bqQf4VDW1vC9AlDVM6Qcw',
+  access_token_secret: 'opDlJzhSQ5YIQKFSrrIlA9L4bPOMivxjAkX6odZRCzAyL'
+}),
+stream = null;
+
+
+/**
+ * Create Socket.IO listener
+ */
+
+var express = require('express');
+var io = require('socket.io').listen(server); 
+
+var socketCount = 0; 
+
+io.sockets.on('connection', function(socket) { 
+    //increase socket count
+  socketCount++;
+
+    //let all sockets know how many are connected - for test purposes only
+  io.sockets.emit('users connected', socketCount);
+
+  socket.on('disconnect', function() {
+    socketCount--;
+    io.sockets.emit('users connected', socketCount);
+  });
+
+  socket.on('get-twitts-stream-track', function(data) { //Please note, this only gets the latest twitts 
+    if(stream == null) {
+        //Connect to twitter stream passing in the desired strings
+      //stream = twit.stream('statuses/filter', {track:'ungerboeck,#ungerbock,#lifAatUsi'});
+      stream = twit.stream('statuses/filter', {track: 'javascript'});
+      stream.on('data', function(event) {
+          // Does the JSON result have coordinates
+          /*if (data.coordinates){
+            if (data.coordinates !== null){
+              //If so then build up some nice json and send out to web sockets
+              var outputPoint = {"lat": data.coordinates.coordinates[0],"lng": data.coordinates.coordinates[1]};
+
+              socket.broadcast.emit("twitter-stream", outputPoint);
+
+              //Send out to web sockets channel.
+              socket.emit('twitter-stream', outputPoint);
+            }
+          }*/
+          socket.emit('twitter-stream-track', event);
+      });
+      stream.on('error', function(error) {
+        throw error;
+        console.log(error);
+      });
+    } 
+  });
+
+  socket.on('get-twitts-search', function(data) {
+    twit.get('search/tweets', {q: '#lifeAtUsi', count: 100}, function(error, tweets, response) {
+       //console.log(tweets);
+       if(error) {
+          throw error;
+          console.log(error);
+       } 
+
+       var arrTwitter = [];
+       if(tweets.statuses.length > 0) {
+          for (var tweet in tweets.statuses) {
+
+            objTwitter = {};
+            objTwitter.createdDate = tweets.statuses[tweet].created_at;
+            objTwitter.id = tweets.statuses[tweet].id;
+            objTwitter.user = tweets.statuses[tweet].user.name;
+            objTwitter.user_img = tweets.statuses[tweet].user.profile_image_url_https;
+            objTwitter.user_screen_name = tweets.statuses[tweet].user.screen_name;
+            objTwitter.tweet = tweets.statuses[tweet].text;
+
+            arrTwitter.push(objTwitter);
+         }
+       } else {
+
+       }
+
+       socket.emit('twitter-search-results', arrTwitter);
+    });
+  });
+
+
+  socket.on('get-twitts-search-raw', function(data) {
+    twit.get('search/tweets', {q: '#lifeAtUsi', count: 100}, function(error, tweets, response) {
+       if(error) {
+          throw error;
+          console.log(error);
+       } 
+       
+       socket.emit('twitter-search-raw-results', tweets);
+    });
+  });
+
+      // Emits signal to the client telling them that the
+      // they are connected and can start receiving Tweets
+    socket.emit("connected");
+});
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+
+  var bind = typeof port === 'string'
+    ? 'Pipe ' + port
+    : 'Port ' + port;
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListening() {
+  var addr = server.address();
+  var bind = typeof addr === 'string'
+    ? 'pipe ' + addr
+    : 'port ' + addr.port;
+  debug('Listening on ' + bind);
+}

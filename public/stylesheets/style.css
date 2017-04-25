@@ -1,0 +1,146 @@
+html {
+	font-family: 'Roboto Condensed', sans-serif;
+	color: #231f20;
+	width: 100%;
+	height: 100%;
+	margin: 0px;
+	padding: 0px;
+	overflow-x: hidden;
+}
+body {
+	font-family: 'Roboto Condensed', sans-serif;
+	color: #231f20;
+	width: 100%;
+	height: 100%;
+	margin: 0px;
+	padding: 0px;
+	background: #ffffff;
+}
+h1 {
+	font-family: 'Roboto Condensed', sans-serif;
+	color: #231f20;
+}
+h2 {
+	font-family: 'Roboto Condensed', sans-serif;
+	color: #231f20;
+}
+h3 {
+	font-family: 'Roboto Condensed', sans-serif;
+	color: #231f20;
+}
+h4 {
+	font-family: 'Roboto Condensed', sans-serif;
+	color: #231f20;
+}
+h5 {
+	font-family: 'Roboto Condensed', sans-serif;
+	color: #231f20;
+}
+h6 {
+	font-family: 'Roboto Condensed', sans-serif;
+	color: #231f20;
+}
+a {
+	color: #F15B46;
+	text-decoration: none;
+}
+a:hover {
+	color: #000;
+	text-decoration: none;
+}
+input::-webkit-input-placeholder {
+	color: #999;
+}
+input:-moz-placeholder {
+	color: #999;
+}
+input::-moz-placeholder {
+	color: #999;
+}
+input:-ms-input-placeholder {
+	color: #999;
+}
+input:-webkit-autofill {
+	-webkit-box-shadow: 0 0 0px 1000px #74CBC5 inset;
+	-webkit-text-fill-color: #ffffff; !important;
+}
+input:focus, button:focus {
+	outline: 0;
+}
+.no-show {
+	display: none !important;
+}
+.alert-message {
+	font-size: 1.5em;
+	margin-top: 5em;
+	margin-bottom: 3em;
+}
+/***************** BEGIN HEADER SECTION ******************/
+header {
+	background: #231f20;
+	min-height: 5em;
+}
+header .logo {
+	margin-top: 1.5em;
+}
+header .logo img {
+	width: 100%;
+}
+header .site-search {
+	color: #ffffff;
+	margin-top: 2em;
+}
+header span {
+	float: right;
+	text-transform: uppercase;
+	font-size: 1.3em;
+}
+header span:hover {
+	cursor: pointer;
+	color: #ccc;
+}
+header span a {
+	color: #ffffff;
+	text-decoration: none;
+}
+header span a:hover {
+	color: #ccc;
+}
+/***************** END HEADER SECTION ******************/
+
+/***************** BEGIN FOOTER SECTION ****************/
+footer {
+	background: #f1f1f1;
+	color: #999;
+	font-weight: 100;
+	text-transform: uppercase;
+	text-align: center;
+	padding: 10px 10px 30px 10px;
+	margin-top: 0em;
+}
+/****************** END FOOTER SECTION *****************/
+
+/****************** BEGIN SLIDESHOW ********************/
+#twitter-container { 
+    position: relative; 
+    min-height: 10em;
+    display: none;
+}
+#txtlzr, #txtlzruser {
+	
+	min-height: 5em;
+	margin-top: 1em;
+	font-size: 2em;
+
+}
+
+/****************** END SLIDESHOW ********************/
+
+/****************************** BEGIN MEDIA QUERIES ************************/
+@media (max-width: 1199px) and (min-width: 992px) {
+}
+@media (max-width: 991px) {
+}
+@media (max-width: 767px) {
+}
+/****************************** END MEDIA QUERIES ************************/	
